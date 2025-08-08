@@ -7,7 +7,6 @@ const orderRoutes = require('./routes/order');
 const cartRoutes = require('./routes/cart');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
-const swaggerUi = require('swagger-ui-express');
 const yaml = require('yamljs');
 require('dotenv').config({ path: '.env' });
 const analyticsRoutes = require('./routes/analytics');
@@ -31,10 +30,6 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/faq', faqRoutes);
 
 
-
-// Swagger Documentation
-const swaggerDocument = yaml.load('./swagger.yaml');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Create default admin account and FAQs
 const initializeData = async () => {
@@ -61,5 +56,4 @@ initializeData();
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(` Server running at http://localhost:${PORT}`);
-    console.log(` Swagger Docs available at http://localhost:${PORT}/api-docs`);
 });
