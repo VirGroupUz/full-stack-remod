@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8" />
+    <title>Kirish - Dern-Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/styles.css" rel="stylesheet" />
+</head>
+<body data-page="login">
+<main class="center">
+    <form class="card form" id="login-form" autocomplete="on">
+        <h1 class="title">Kirish</h1>
+        <label class="label">Email
+            <input name="email" type="email" class="input" placeholder="john@example.com" required />
+        </label>
+        <label class="label">Parol
+            <input name="password" type="password" class="input" placeholder="••••••••" required />
+        </label>
+        <div class="error small" id="login-error" role="alert" aria-live="polite"></div>
+        <button class="btn primary" type="submit">Kirish</button>
+        <p class="muted small mtop">Hisobingiz yo‘qmi? <a href="../front-end/register.html">Ro‘yxatdan o‘tish</a></p>
+    </form>
+</main>
+
+<script>
+    // Inline API + Auth for this page
+    (function(){
+        const API_BASE = localStorage.getItem('DM_API_BASE') || 'http://localhost:5000'
+        const TOKEN_KEY='dm_token', USER_KEY='dm_user'
+        async function request(path,{method='GET',body,headers={}}={}) {
+            const res = await fetch(API_BASE+path,{method,headers:{'Content-Type':'application/json',...headers}, body: body?JSON.stringify(body):undefined})
+            const txt = await res.text(); let data = null; try{data = txt?JSON.parse(txt):null}catch{}
+            if(!res.ok) throw new Error(data?.message || 'HTTP '+res.status)
+            return data
+        }
+        function setAuth(token,user){ localStorage.setItem(TOKEN_KEY,token); localStorage.setItem(USER_KEY,JSON.stringify(user)) }
+
+        document.getElementById('login-form')?.addEventListener('submit', async (e)=>{
+            e.preventDefault()
+            const errEl = document.getElementById('login-error'); errEl.textContent=''
+            const fd = new FormData(e.currentTarget); const email=fd.get('email'); const password=fd.get('password')
+            try {
+                const { token, user } = await request('/api/auth/login',{method:'POST', body:{ email, password }})
+                setAuth(token, { id: user.id || user._id || '', name:user.name, email:user.email, role:user.role })
+                if (user.role === 'admin') location.replace('../front-end/admin-dashboard.html')
+                else location.replace('../front-end/user-dashboard.html')
+            } catch(err){ errEl.textContent = err.message || 'Xatolik yuz berdi' }
+        })
+    })()
+</script>
+</body>
+</html>

@@ -1,0 +1,2071 @@
+<!doctype html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Dern Market</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --card: #ffffff;
+            --primary: #1e293b;
+            --primary-contrast: #ffffff;
+            --success: #059669;
+            --error: #dc2626;
+            --warning: #d97706;
+            --info: #0284c7;
+            --secondary: #475569;
+            --accent: #3b82f6;
+        }
+
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #f1f5f9;
+            color: #1e293b;
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        .title { margin: 0 0 8px; }
+        .small { font-size: 12px; }
+        .muted { color: var(--muted); }
+        .mtop { margin-top: 8px; }
+        .mt { margin-top: 16px; }
+        .mb { margin-bottom: 16px; }
+        .row { display: flex; align-items: center; }
+        .row.gap { gap: 8px; }
+        .row.between { justify-content: space-between; }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn {
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            padding: 0 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .btn:hover {
+            background: #f8fafc;
+            border-color: var(--accent);
+        }
+
+        .btn:active { transform: translateY(1px); }
+
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn.primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn.success {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .btn.success:hover {
+            background: #047857;
+            border-color: #047857;
+        }
+
+        .btn.danger {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+        }
+
+        .btn.danger:hover {
+            background: #b91c1c;
+            border-color: #b91c1c;
+        }
+
+        .btn.warning {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+
+        .btn.warning:hover {
+            background: #b45309;
+            border-color: #b45309;
+        }
+
+        .btn.outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn.outline:hover {
+            background: var(--card);
+            border-color: var(--accent);
+        }
+
+        .btn.sm { height: 32px; padding: 0 12px; font-size: 12px; }
+        .btn.lg { height: 48px; padding: 0 20px; font-size: 16px; }
+
+        .input, .textarea, .select {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            background: var(--card);
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .input { height: 40px; }
+        .textarea { min-height: 80px; resize: vertical; }
+        .select { height: 40px; }
+
+        .input:focus, .textarea:focus, .select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            padding: 24px;
+            overflow-x: hidden;
+            background: var(--bg);
+        }
+
+        .topbar {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            margin: -24px -24px 24px -24px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            padding: 0 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            color: var(--secondary);
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: #dbeafe;
+            color: var(--accent);
+            border: 1px solid #bfdbfe;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0 0 8px 0;
+        }
+
+        .page-subtitle {
+            color: var(--muted);
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .stat-card.success::before { background: var(--success); }
+        .stat-card.warning::before { background: var(--warning); }
+        .stat-card.error::before { background: var(--error); }
+        .stat-card.info::before { background: var(--info); }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .table-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table tr:hover {
+            background: #f8fafc;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-shipped { background: #d1fae5; color: #065f46; }
+        .status-delivered { background: #dcfce7; color: #166534; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: flex-end;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+            background: var(--card);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .tab:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .filter-select {
+            min-width: 150px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1001;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            animation: slideInRight 0.3s ease;
+        }
+
+        .notification.success {
+            background: var(--success);
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 16px;
+            }
+
+            .brand {
+                margin-bottom: 16px;
+            }
+
+            .nav-section {
+                margin-bottom: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 24px;
+                margin: 16px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .topbar {
+                padding: 16px;
+                margin: -16px -16px 24px -16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">
+                <svg class="nav-icon" fill="white" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 11 5.16-1.261 9-5.45 9-11V7l-10-5z"/>
+                </svg>
+            </div>
+            <div class="brand-text">Dern‑Market Admin</div>
+        </div>
+
+        <nav>
+            <div class="nav-section">
+                <div class="nav-title">Asosiy</div>
+                <div class="nav-link active" data-section="dashboard">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                    Dashboard
+                </div>
+                <div class="nav-link" data-section="products">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Mahsulotlar
+                </div>
+                <div class="nav-link" data-section="orders">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
+                    </svg>
+                    Buyurtmalar
+                </div>
+                <div class="nav-link" data-section="users">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 7c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm-4 6c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    Foydalanuvchilar
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">Boshqaruv</div>
+                <div class="nav-link" data-section="faqs">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                    </svg>
+                    FAQ
+                </div>
+                <div class="nav-link" data-section="analytics">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    </svg>
+                    Analitika
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <h1 id="pageTitle" class="page-title">Dashboard</h1>
+            <div class="row gap">
+                <span id="adminGreeting" class="muted">Xush kelibsiz, Admin!</span>
+                <button class="btn outline" id="logoutBtn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                    </svg>
+                    Chiqish
+                </button>
+            </div>
+        </div>
+
+        <div id="dashboard" class="section active">
+            <div class="page-header">
+                <h2 class="page-title">Dashboard</h2>
+                <p class="page-subtitle">Tizim statistikasi va umumiy ma'lumotlar</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Jami foydalanuvchilar</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="totalProducts">0</div>
+                    <div class="stat-label">Jami mahsulotlar</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Jami buyurtmalar</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-value" id="totalRevenue">$0</div>
+                    <div class="stat-label">Jami daromad</div>
+                </div>
+            </div>
+
+            <div class="row" style="gap: 24px;">
+                <div style="flex: 1;">
+                    <h3 style="margin-bottom: 16px;">So'nggi buyurtmalar</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mijoz</th>
+                                <th>Summa</th>
+                                <th>Holat</th>
+                            </tr>
+                            </thead>
+                            <tbody id="recentOrdersTable">
+                            <tr>
+                                <td colspan="4" class="loading">
+                                    <div class="spinner"></div>
+                                    Yuklanmoqda...
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="margin-bottom: 16px;">Eng ko'p sotilgan mahsulotlar</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Mahsulot</th>
+                                <th>Sotildi</th>
+                                <th>Daromad</th>
+                            </tr>
+                            </thead>
+                            <tbody id="topProductsTable">
+                            <tr>
+                                <td colspan="3" class="loading">
+                                    <div class="spinner"></div>
+                                    Yuklanmoqda...
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="products" class="section">
+            <div class="page-header">
+                <h2 class="page-title">Mahsulotlar boshqaruvi</h2>
+                <p class="page-subtitle">Mahsulotlarni qo'shish, tahrirlash va o'chirish</p>
+            </div>
+
+            <div class="actions-bar">
+                <div class="search-box">
+                    <input type="text" class="input" id="productSearch" placeholder="Mahsulotlarni qidiring...">
+                </div>
+                <select class="select filter-select" id="productCategoryFilter">
+                    <option value="">Barcha toifalar</option>
+                </select>
+                <button class="btn primary" id="addProductBtn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    Mahsulot qo'shish
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Nomi</th>
+                        <th>Toifa</th>
+                        <th>Narx</th>
+                        <th>Zaxira</th>
+                        <th>Holat</th>
+                        <th>Amallar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="productsTable">
+                    <tr>
+                        <td colspan="6" class="loading">
+                            <div class="spinner"></div>
+                            Mahsulotlar yuklanmoqda...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="orders" class="section">
+            <div class="page-header">
+                <h2 class="page-title">Buyurtmalar boshqaruvi</h2>
+                <p class="page-subtitle">Buyurtmalarni ko'rish va holatini yangilash</p>
+            </div>
+
+            <div class="actions-bar">
+                <div class="search-box">
+                    <input type="text" class="input" id="orderSearch" placeholder="Buyurtmalarni qidiring...">
+                </div>
+                <select class="select filter-select" id="orderStatusFilter">
+                    <option value="">Barcha holatlar</option>
+                    <option value="pending">Kutilmoqda</option>
+                    <option value="processing">Jarayonda</option>
+                    <option value="shipped">Yuborildi</option>
+                    <option value="delivered">Yetkazildi</option>
+                    <option value="cancelled">Bekor qilindi</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Mijoz</th>
+                        <th>Sana</th>
+                        <th>Summa</th>
+                        <th>Holat</th>
+                        <th>Amallar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ordersTable">
+                    <tr>
+                        <td colspan="6" class="loading">
+                            <div class="spinner"></div>
+                            Buyurtmalar yuklanmoqda...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="users" class="section">
+            <div class="page-header">
+                <h2 class="page-title">Foydalanuvchilar boshqaruvi</h2>
+                <p class="page-subtitle">Foydalanuvchilarni ko'rish va boshqarish</p>
+            </div>
+
+            <div class="actions-bar">
+                <div class="search-box">
+                    <input type="text" class="input" id="userSearch" placeholder="Foydalanuvchilarni qidiring...">
+                </div>
+                <select class="select filter-select" id="userRoleFilter">
+                    <option value="">Barcha rollar</option>
+                    <option value="user">Foydalanuvchi</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Ism</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Ro'yxatdan o'tgan sana</th>
+                        <th>Amallar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                    <tr>
+                        <td colspan="5" class="loading">
+                            <div class="spinner"></div>
+                            Foydalanuvchilar yuklanmoqda...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="faqs" class="section">
+            <div class="page-header">
+                <h2 class="page-title">FAQ boshqaruvi</h2>
+                <p class="page-subtitle">Tez-tez so'raladigan savollarni boshqarish</p>
+            </div>
+
+            <div class="actions-bar">
+                <div class="search-box">
+                    <input type="text" class="input" id="faqSearch" placeholder="FAQ qidiring...">
+                </div>
+                <button class="btn primary" id="addFaqBtn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    FAQ qo'shish
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Savol</th>
+                        <th>Javob</th>
+                        <th>Amallar</th>
+                    </tr>
+                    </thead>
+                    <tbody id="faqsTable">
+                    <tr>
+                        <td colspan="3" class="loading">
+                            <div class="spinner"></div>
+                            FAQ yuklanmoqda...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="analytics" class="section">
+            <div class="page-header">
+                <h2 class="page-title">Analitika</h2>
+                <p class="page-subtitle">Tizim statistikasi va hisobotlar</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" data-tab="sales">Savdo</div>
+                <div class="tab" data-tab="users">Foydalanuvchilar</div>
+                <div class="tab" data-tab="products">Mahsulotlar</div>
+            </div>
+
+            <div id="salesTab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="dailySales">$0</div>
+                        <div class="stat-label">Bugungi savdo</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value" id="weeklySales">$0</div>
+                        <div class="stat-label">Haftalik savdo</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="monthlySales">$0</div>
+                        <div class="stat-label">Oylik savdo</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-value" id="yearlySales">$0</div>
+                        <div class="stat-label">Yillik savdo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="usersTab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="activeUsers">0</div>
+                        <div class="stat-label">Faol foydalanuvchilar</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value" id="newUsers">0</div>
+                        <div class="stat-label">Yangi foydalanuvchilar</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="productsTab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="lowStockProducts">0</div>
+                        <div class="stat-label">Kam qolgan mahsulotlar</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="outOfStockProducts">0</div>
+                        <div class="stat-label">Tugagan mahsulotlar</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="productModalTitle" class="modal-title">Mahsulot qo'shish</h3>
+        </div>
+        <form id="productForm" class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Nomi</label>
+                <input type="text" class="input" id="productName" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tavsif</label>
+                <textarea class="textarea" id="productDescription"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Narx ($)</label>
+                <input type="number" class="input" id="productPrice" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Zaxira</label>
+                <input type="number" class="input" id="productStock" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Toifa</label>
+                <input type="text" class="input" id="productCategory">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn outline" id="cancelProductBtn">Bekor qilish</button>
+                <button type="submit" class="btn primary" id="saveProductBtn">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Buyurtma tafsilotlari</h3>
+        </div>
+        <div id="orderDetails"></div>
+        <div class="form-actions">
+            <button type="button" class="btn outline" id="cancelOrderBtn">Yopish</button>
+            <select class="select" id="orderStatusSelect" style="width: auto;">
+                <option value="pending">Kutilmoqda</option>
+                <option value="processing">Jarayonda</option>
+                <option value="shipped">Yuborildi</option>
+                <option value="delivered">Yetkazildi</option>
+                <option value="cancelled">Bekor qilindi</option>
+            </select>
+            <button type="button" class="btn primary" id="updateOrderStatusBtn">Holatni yangilash</button>
+        </div>
+    </div>
+</div>
+
+<div id="faqModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="faqModalTitle" class="modal-title">FAQ qo'shish</h3>
+        </div>
+        <form id="faqForm" class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Savol</label>
+                <textarea class="textarea" id="faqQuestion" required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Javob</label>
+                <textarea class="textarea" id="faqAnswer" required></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn outline" id="cancelFaqBtn">Bekor qilish</button>
+                <button type="submit" class="btn primary" id="saveFaqBtn">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:5000/api';
+    const TOKEN_KEY = 'dm_token';
+    const USER_KEY = 'dm_user';
+
+    let currentUser = null;
+    let authToken = localStorage.getItem(TOKEN_KEY);
+    let currentEditingProduct = null;
+    let currentEditingFaq = null;
+    let currentOrderId = null;
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section');
+    const pageTitle = document.getElementById('pageTitle');
+    const adminGreeting = document.getElementById('adminGreeting');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    const totalUsers = document.getElementById('totalUsers');
+    const totalProducts = document.getElementById('totalProducts');
+    const totalOrders = document.getElementById('totalOrders');
+    const totalRevenue = document.getElementById('totalRevenue');
+
+    const productModal = document.getElementById('productModal');
+    const productForm = document.getElementById('productForm');
+    const productModalTitle = document.getElementById('productModalTitle');
+    const addProductBtn = document.getElementById('addProductBtn');
+    const cancelProductBtn = document.getElementById('cancelProductBtn');
+
+    const orderModal = document.getElementById('orderModal');
+    const orderDetails = document.getElementById('orderDetails');
+    const orderStatusSelect = document.getElementById('orderStatusSelect');
+    const updateOrderStatusBtn = document.getElementById('updateOrderStatusBtn');
+    const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+
+    const faqModal = document.getElementById('faqModal');
+    const faqForm = document.getElementById('faqForm');
+    const faqModalTitle = document.getElementById('faqModalTitle');
+    const addFaqBtn = document.getElementById('addFaqBtn');
+    const cancelFaqBtn = document.getElementById('cancelFaqBtn');
+
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    function getUser() {
+        try {
+            const raw = localStorage.getItem(USER_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 4000);
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAuth();
+        setupEventListeners();
+        loadDashboardData();
+    });
+
+    function checkAuth() {
+        if (!authToken) {
+            window.location.href = 'products.html';
+            return;
+        }
+
+        try {
+            const payload = JSON.parse(atob(authToken.split('.')[1]));
+            if (payload.exp * 1000 <= Date.now()) {
+                localStorage.removeItem(TOKEN_KEY);
+                localStorage.removeItem(USER_KEY);
+                window.location.href = 'products.html';
+                return;
+            }
+
+            currentUser = getUser() || payload;
+
+            if (currentUser.role !== 'admin') {
+                showNotification('Sizda admin huquqlari yo\'q!', 'error');
+                setTimeout(() => {
+                    window.location.href = 'products.html';
+                }, 2000);
+                return;
+            }
+
+            updateAdminGreeting();
+        } catch (e) {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
+            window.location.href = 'products.html';
+        }
+    }
+
+    function updateAdminGreeting() {
+        if (currentUser && adminGreeting) {
+            adminGreeting.textContent = `Xush kelibsiz, ${currentUser.name || currentUser.email}!`;
+        }
+    }
+
+    function setupEventListeners() {
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const section = link.dataset.section;
+                if (section) {
+                    showSection(section);
+                }
+            });
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const tabName = tab.dataset.tab;
+                if (tabName) {
+                    showTab(tabName);
+                }
+            });
+        });
+
+        logoutBtn.addEventListener('click', logout);
+        addProductBtn.addEventListener('click', () => showProductModal());
+        cancelProductBtn.addEventListener('click', hideProductModal);
+        productForm.addEventListener('submit', handleProductSubmit);
+
+        cancelOrderBtn.addEventListener('click', hideOrderModal);
+        updateOrderStatusBtn.addEventListener('click', updateOrderStatus);
+
+        addFaqBtn.addEventListener('click', () => showFaqModal());
+        cancelFaqBtn.addEventListener('click', hideFaqModal);
+        faqForm.addEventListener('submit', handleFaqSubmit);
+
+        document.getElementById('productSearch').addEventListener('input', debounce(filterProducts, 300));
+        document.getElementById('productCategoryFilter').addEventListener('change', filterProducts);
+        document.getElementById('orderSearch').addEventListener('input', debounce(filterOrders, 300));
+        document.getElementById('orderStatusFilter').addEventListener('change', filterOrders);
+        document.getElementById('userSearch').addEventListener('input', debounce(filterUsers, 300));
+        document.getElementById('userRoleFilter').addEventListener('change', filterUsers);
+        document.getElementById('faqSearch').addEventListener('input', debounce(filterFaqs, 300));
+
+        productModal.addEventListener('click', (e) => {
+            if (e.target === productModal) hideProductModal();
+        });
+        orderModal.addEventListener('click', (e) => {
+            if (e.target === orderModal) hideOrderModal();
+        });
+        faqModal.addEventListener('click', (e) => {
+            if (e.target === faqModal) hideFaqModal();
+        });
+    }
+
+    function showSection(sectionName) {
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.section === sectionName) {
+                link.classList.add('active');
+            }
+        });
+
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionName).classList.add('active');
+
+        const titles = {
+            dashboard: 'Dashboard',
+            products: 'Mahsulotlar',
+            orders: 'Buyurtmalar',
+            users: 'Foydalanuvchilar',
+            faqs: 'FAQ',
+            analytics: 'Analitika'
+        };
+        pageTitle.textContent = titles[sectionName] || 'Dashboard';
+
+        switch (sectionName) {
+            case 'dashboard':
+                loadDashboardData();
+                break;
+            case 'products':
+                loadProducts();
+                break;
+            case 'orders':
+                loadOrders();
+                break;
+            case 'users':
+                loadUsers();
+                break;
+            case 'faqs':
+                loadFaqs();
+                break;
+            case 'analytics':
+                loadAnalytics();
+                break;
+        }
+    }
+
+    function showTab(tabName) {
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.dataset.tab === tabName) {
+                tab.classList.add('active');
+            }
+        });
+
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(tabName + 'Tab').classList.add('active');
+    }
+
+    async function makeRequest(url, options = {}) {
+        try {
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
+                    ...options.headers
+                }
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: 'Request failed' }));
+                throw new Error(error.message || 'Request failed');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('API Request failed:', error);
+            throw error;
+        }
+    }
+
+    // Dashboard Data Loading - Uses all analytics APIs
+    async function loadDashboardData() {
+        try {
+            // Load users using auth API
+            const users = await makeRequest(`${API_BASE}/auth/users`, { method: 'POST' });
+            totalUsers.textContent = Array.isArray(users) ? users.length : 0;
+
+            // Load products using products API
+            const products = await makeRequest(`${API_BASE}/products`);
+            totalProducts.textContent = Array.isArray(products) ? products.length : 0;
+
+            // Load orders using orders API
+            const orders = await makeRequest(`${API_BASE}/orders`);
+            if (Array.isArray(orders)) {
+                totalOrders.textContent = orders.length;
+                const revenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+                totalRevenue.textContent = `$${revenue.toFixed(2)}`;
+                renderRecentOrders(orders.slice(0, 5));
+            } else {
+                totalOrders.textContent = '0';
+                totalRevenue.textContent = '$0.00';
+            }
+
+            // Load top products using analytics API
+            try {
+                const topProducts = await makeRequest(`${API_BASE}/analytics/top-products`);
+                renderTopProducts(topProducts || []);
+            } catch (error) {
+                console.log('Top products analytics not available');
+                renderTopProducts([]);
+            }
+
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            showNotification('Dashboard ma\'lumotlarini yuklashda xatolik', 'error');
+        }
+    }
+
+    function renderRecentOrders(orders) {
+        const tbody = document.getElementById('recentOrdersTable');
+        if (!orders || orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Buyurtmalar yo\'q</td></tr>';
+            return;
+        }
+
+        const statusLabels = {
+            pending: 'Kutilmoqda',
+            processing: 'Jarayonda',
+            shipped: 'Yuborildi',
+            delivered: 'Yetkazildi',
+            cancelled: 'Bekor qilindi'
+        };
+
+        tbody.innerHTML = orders.map(order => `
+          <tr>
+              <td>#${order._id ? order._id.substring(0, 8) : 'N/A'}</td>
+              <td>${escapeHtml(order.user?.name || order.user?.email || order.userId?.name || order.userId?.email || 'N/A')}</td>
+              <td>$${(order.total || 0).toFixed(2)}</td>
+              <td><span class="status-badge status-${order.status || 'pending'}">${statusLabels[order.status] || 'Noma\'lum'}</span></td>
+          </tr>
+      `).join('');
+    }
+
+    function renderTopProducts(products) {
+        const tbody = document.getElementById('topProductsTable');
+        if (!products || products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Ma\'lumot yo\'q</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = products.map(product => `
+          <tr>
+              <td>${escapeHtml(product.productName || product.name)}</td>
+              <td>${product.totalSold || 0}</td>
+              <td>$${(product.totalRevenue || 0).toFixed(2)}</td>
+          </tr>
+      `).join('');
+    }
+
+    // Products Management - Uses products API
+    async function loadProducts() {
+        try {
+            const products = await makeRequest(`${API_BASE}/products`);
+            if (Array.isArray(products)) {
+                renderProducts(products);
+                populateProductCategories(products);
+            } else {
+                throw new Error('Invalid products data');
+            }
+        } catch (error) {
+            console.error('Error loading products:', error);
+            document.getElementById('productsTable').innerHTML =
+                '<tr><td colspan="6" class="empty-state">Mahsulotlarni yuklashda xatolik</td></tr>';
+        }
+    }
+
+    function renderProducts(products) {
+        const tbody = document.getElementById('productsTable');
+        if (!products || products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Mahsulotlar yo\'q</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = products.map(product => `
+          <tr>
+              <td>${escapeHtml(product.name || 'N/A')}</td>
+              <td>${escapeHtml(product.category || 'Toifa yo\'q')}</td>
+              <td>$${(product.price || 0).toFixed(2)}</td>
+              <td>${product.stock || 0}</td>
+              <td>
+                  <span class="status-badge ${(product.stock || 0) > 0 ? 'status-delivered' : 'status-cancelled'}">
+                      ${(product.stock || 0) > 0 ? 'Mavjud' : 'Tugagan'}
+                  </span>
+              </td>
+              <td>
+                  <button class="btn sm outline" onclick="editProduct('${product._id}')">Tahrirlash</button>
+                  <button class="btn sm danger" onclick="deleteProduct('${product._id}')">O'chirish</button>
+              </td>
+          </tr>
+      `).join('');
+    }
+
+    function populateProductCategories(products) {
+        const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+        const select = document.getElementById('productCategoryFilter');
+        select.innerHTML = '<option value="">Barcha toifalar</option>' +
+            categories.map(cat => `<option value="${cat}">${escapeHtml(cat)}</option>`).join('');
+    }
+
+    function filterProducts() {
+        const search = document.getElementById('productSearch').value.toLowerCase();
+        const category = document.getElementById('productCategoryFilter').value;
+
+        const rows = document.querySelectorAll('#productsTable tr');
+        rows.forEach(row => {
+            if (row.cells.length < 6) return;
+
+            const name = row.cells[0].textContent.toLowerCase();
+            const productCategory = row.cells[1].textContent;
+
+            const matchesSearch = name.includes(search);
+            const matchesCategory = !category || productCategory === category;
+
+            row.style.display = matchesSearch && matchesCategory ? '' : 'none';
+        });
+    }
+
+    function showProductModal(product = null) {
+        currentEditingProduct = product;
+        productModalTitle.textContent = product ? 'Mahsulotni tahrirlash' : 'Mahsulot qo\'shish';
+
+        if (product) {
+            document.getElementById('productName').value = product.name || '';
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productPrice').value = product.price || '';
+            document.getElementById('productStock').value = product.stock || '';
+            document.getElementById('productCategory').value = product.category || '';
+        } else {
+            productForm.reset();
+        }
+
+        productModal.classList.add('show');
+    }
+
+    function hideProductModal() {
+        productModal.classList.remove('show');
+        currentEditingProduct = null;
+        productForm.reset();
+    }
+
+    async function handleProductSubmit(e) {
+        e.preventDefault();
+
+        const productData = {
+            name: document.getElementById('productName').value,
+            description: document.getElementById('productDescription').value,
+            price: parseFloat(document.getElementById('productPrice').value),
+            stock: parseInt(document.getElementById('productStock').value),
+            category: document.getElementById('productCategory').value
+        };
+
+        try {
+            const url = currentEditingProduct
+                ? `${API_BASE}/products/${currentEditingProduct._id}`
+                : `${API_BASE}/products`;
+
+            const method = currentEditingProduct ? 'PUT' : 'POST';
+
+            await makeRequest(url, {
+                method,
+                body: JSON.stringify(productData)
+            });
+
+            showNotification(currentEditingProduct ? 'Mahsulot yangilandi!' : 'Mahsulot qo\'shildi!');
+            hideProductModal();
+            loadProducts();
+        } catch (error) {
+            console.error('Error saving product:', error);
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    async function editProduct(productId) {
+        try {
+            const products = await makeRequest(`${API_BASE}/products`);
+            const product = products.find(p => p._id === productId);
+
+            if (product) {
+                showProductModal(product);
+            }
+        } catch (error) {
+            console.error('Error loading product:', error);
+            showNotification('Mahsulotni yuklashda xatolik', 'error');
+        }
+    }
+
+    async function deleteProduct(productId) {
+        if (!confirm('Mahsulotni o\'chirishni xohlaysizmi?')) return;
+
+        try {
+            await makeRequest(`${API_BASE}/products/${productId}`, {
+                method: 'DELETE'
+            });
+
+            showNotification('Mahsulot o\'chirildi!');
+            loadProducts();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    // Orders Management - Uses orders API
+    async function loadOrders() {
+        try {
+            const orders = await makeRequest(`${API_BASE}/orders`);
+            if (Array.isArray(orders)) {
+                renderOrders(orders);
+            } else {
+                throw new Error('Invalid orders data');
+            }
+        } catch (error) {
+            console.error('Error loading orders:', error);
+            document.getElementById('ordersTable').innerHTML =
+                '<tr><td colspan="6" class="empty-state">Buyurtmalarni yuklashda xatolik</td></tr>';
+        }
+    }
+
+    function renderOrders(orders) {
+        const tbody = document.getElementById('ordersTable');
+        if (!orders || orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Buyurtmalar yo\'q</td></tr>';
+            return;
+        }
+
+        const statusLabels = {
+            pending: 'Kutilmoqda',
+            processing: 'Jarayonda',
+            shipped: 'Yuborildi',
+            delivered: 'Yetkazildi',
+            cancelled: 'Bekor qilindi'
+        };
+
+        tbody.innerHTML = orders.map(order => `
+          <tr>
+              <td>#${order._id ? order._id.substring(0, 8) : 'N/A'}</td>
+              <td>${escapeHtml(order.user?.name || order.user?.email || order.userId?.name || order.userId?.email || 'N/A')}</td>
+              <td>${order.createdAt ? new Date(order.createdAt).toLocaleDateString('uz-UZ') : 'N/A'}</td>
+              <td>$${(order.total || 0).toFixed(2)}</td>
+              <td><span class="status-badge status-${order.status || 'pending'}">${statusLabels[order.status] || 'Noma\'lum'}</span></td>
+              <td>
+                  <button class="btn sm outline" onclick="viewOrder('${order._id}')">Ko'rish</button>
+              </td>
+          </tr>
+      `).join('');
+    }
+
+    function filterOrders() {
+        const search = document.getElementById('orderSearch').value.toLowerCase();
+        const status = document.getElementById('orderStatusFilter').value;
+
+        const rows = document.querySelectorAll('#ordersTable tr');
+        rows.forEach(row => {
+            if (row.cells.length < 6) return;
+
+            const orderId = row.cells[0].textContent.toLowerCase();
+            const customer = row.cells[1].textContent.toLowerCase();
+            const orderStatus = row.cells[4].querySelector('.status-badge')?.className || '';
+
+            const matchesSearch = orderId.includes(search) || customer.includes(search);
+            const matchesStatus = !status || orderStatus.includes(`status-${status}`);
+
+            row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+        });
+    }
+
+    async function viewOrder(orderId) {
+        try {
+            const orders = await makeRequest(`${API_BASE}/orders`);
+            const order = orders.find(o => o._id === orderId);
+
+            if (!order) throw new Error('Buyurtma topilmadi');
+
+            currentOrderId = orderId;
+            orderStatusSelect.value = order.status || 'pending';
+
+            const statusLabels = {
+                pending: 'Kutilmoqda',
+                processing: 'Jarayonda',
+                shipped: 'Yuborildi',
+                delivered: 'Yetkazildi',
+                cancelled: 'Bekor qilindi'
+            };
+
+            orderDetails.innerHTML = `
+              <div class="form-grid">
+                  <div><strong>Buyurtma ID:</strong> #${order._id ? order._id.substring(0, 8) : 'N/A'}</div>
+                  <div><strong>Mijoz:</strong> ${escapeHtml(order.user?.name || order.user?.email || order.userId?.name || order.userId?.email || 'N/A')}</div>
+                  <div><strong>Sana:</strong> ${order.createdAt ? new Date(order.createdAt).toLocaleDateString('uz-UZ') : 'N/A'}</div>
+                  <div><strong>Holat:</strong> <span class="status-badge status-${order.status || 'pending'}">${statusLabels[order.status] || 'Noma\'lum'}</span></div>
+                  <div><strong>Jami summa:</strong> $${(order.total || 0).toFixed(2)}</div>
+                  <div><strong>Mahsulotlar:</strong></div>
+                  <div style="margin-left: 20px;">
+                      ${order.products?.map(item => `
+                          <div>• ${escapeHtml(item.product?.name || item.productId?.name || 'N/A')} x ${item.quantity || 0} = $${((item.product?.price || item.productId?.price || 0) * (item.quantity || 0)).toFixed(2)}</div>
+                      `).join('') || 'Ma\'lumot yo\'q'}
+                  </div>
+              </div>
+          `;
+
+            orderModal.classList.add('show');
+        } catch (error) {
+            console.error('Error loading order:', error);
+            showNotification('Buyurtmani yuklashda xatolik', 'error');
+        }
+    }
+
+    function hideOrderModal() {
+        orderModal.classList.remove('show');
+        currentOrderId = null;
+    }
+
+    async function updateOrderStatus() {
+        if (!currentOrderId) return;
+
+        try {
+            await makeRequest(`${API_BASE}/orders/${currentOrderId}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    status: orderStatusSelect.value
+                })
+            });
+
+            showNotification('Buyurtma holati yangilandi!');
+            hideOrderModal();
+            loadOrders();
+        } catch (error) {
+            console.error('Error updating order status:', error);
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    // Users Management - Uses auth API
+    async function loadUsers() {
+        try {
+            const users = await makeRequest(`${API_BASE}/auth/users`, { method: 'POST' });
+            if (Array.isArray(users)) {
+                renderUsers(users);
+            } else {
+                throw new Error('Invalid users data');
+            }
+        } catch (error) {
+            console.error('Error loading users:', error);
+            document.getElementById('usersTable').innerHTML =
+                '<tr><td colspan="5" class="empty-state">Foydalanuvchilarni yuklashda xatolik</td></tr>';
+        }
+    }
+
+    function renderUsers(users) {
+        const tbody = document.getElementById('usersTable');
+        if (!users || users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Foydalanuvchilar yo\'q</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = users.map(user => `
+          <tr>
+              <td>${escapeHtml(user.name || 'Noma\'lum')}</td>
+              <td>${escapeHtml(user.email || 'N/A')}</td>
+              <td>
+                  <span class="status-badge ${user.role === 'admin' ? 'status-delivered' : 'status-processing'}">
+                      ${user.role === 'admin' ? 'Administrator' : 'Foydalanuvchi'}
+                  </span>
+              </td>
+              <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString('uz-UZ') : 'N/A'}</td>
+              <td>
+                  <button class="btn sm ${user.role === 'admin' ? 'outline' : 'success'}"
+                          onclick="toggleUserRole('${user._id}', '${user.role}')">
+                      ${user.role === 'admin' ? 'Oddiy qilish' : 'Admin qilish'}
+                  </button>
+                  <button class="btn sm danger" onclick="deleteUser('${user._id}')">O'chirish</button>
+              </td>
+          </tr>
+      `).join('');
+    }
+
+    function filterUsers() {
+        const search = document.getElementById('userSearch').value.toLowerCase();
+        const role = document.getElementById('userRoleFilter').value;
+
+        const rows = document.querySelectorAll('#usersTable tr');
+        rows.forEach(row => {
+            if (row.cells.length < 5) return;
+
+            const name = row.cells[0].textContent.toLowerCase();
+            const email = row.cells[1].textContent.toLowerCase();
+            const userRole = row.cells[2].textContent.toLowerCase();
+
+            const matchesSearch = name.includes(search) || email.includes(search);
+            const matchesRole = !role || userRole.includes(role === 'admin' ? 'administrator' : 'foydalanuvchi');
+
+            row.style.display = matchesSearch && matchesRole ? '' : 'none';
+        });
+    }
+
+    async function toggleUserRole(userId, currentRole) {
+        const newRole = currentRole === 'admin' ? 'user' : 'admin';
+        const action = newRole === 'admin' ? 'admin qilish' : 'oddiy foydalanuvchi qilish';
+
+        if (!confirm(`Foydalanuvchini ${action}ni xohlaysizmi?`)) return;
+
+        try {
+            await makeRequest(`${API_BASE}/auth/users/${userId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ role: newRole })
+            });
+
+            showNotification('Foydalanuvchi roli yangilandi!');
+            loadUsers();
+        } catch (error) {
+            console.error('Error updating user role:', error);
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    async function deleteUser(userId) {
+        if (!confirm('Foydalanuvchini o\'chirishni xohlaysizmi?')) return;
+
+        try {
+            await makeRequest(`${API_BASE}/auth/users/${userId}`, {
+                method: 'DELETE'
+            });
+
+            showNotification('Foydalanuvchi o\'chirildi!');
+            loadUsers();
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    // FAQ Management - Uses FAQ API
+    async function loadFaqs() {
+        try {
+            const faqs = await makeRequest(`${API_BASE}/faq`);
+            if (Array.isArray(faqs)) {
+                renderFaqs(faqs);
+            } else {
+                throw new Error('Invalid FAQs data');
+            }
+        } catch (error) {
+            console.error('Error loading FAQs:', error);
+            document.getElementById('faqsTable').innerHTML =
+                '<tr><td colspan="3" class="empty-state">FAQ yuklashda xatolik</td></tr>';
+        }
+    }
+
+    function renderFaqs(faqs) {
+        const tbody = document.getElementById('faqsTable');
+        if (!faqs || faqs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="empty-state">FAQ yo\'q</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = faqs.map(faq => `
+          <tr>
+              <td>${escapeHtml(faq.question || 'N/A')}</td>
+              <td>${escapeHtml((faq.answer || '').substring(0, 100))}${(faq.answer || '').length > 100 ? '...' : ''}</td>
+              <td>
+                  <button class="btn sm outline" onclick="editFaq('${faq._id}')">Tahrirlash</button>
+                  <button class="btn sm danger" onclick="deleteFaq('${faq._id}')">O'chirish</button>
+              </td>
+          </tr>
+      `).join('');
+    }
+
+    function filterFaqs() {
+        const search = document.getElementById('faqSearch').value.toLowerCase();
+
+        const rows = document.querySelectorAll('#faqsTable tr');
+        rows.forEach(row => {
+            if (row.cells.length < 3) return;
+
+            const question = row.cells[0].textContent.toLowerCase();
+            const answer = row.cells[1].textContent.toLowerCase();
+
+            const matches = question.includes(search) || answer.includes(search);
+            row.style.display = matches ? '' : 'none';
+        });
+    }
+
+    function showFaqModal(faq = null) {
+        currentEditingFaq = faq;
+        faqModalTitle.textContent = faq ? 'FAQ tahrirlash' : 'FAQ qo\'shish';
+
+        if (faq) {
+            document.getElementById('faqQuestion').value = faq.question || '';
+            document.getElementById('faqAnswer').value = faq.answer || '';
+        } else {
+            faqForm.reset();
+        }
+
+        faqModal.classList.add('show');
+    }
+
+    function hideFaqModal() {
+        faqModal.classList.remove('show');
+        currentEditingFaq = null;
+        faqForm.reset();
+    }
+
+    async function handleFaqSubmit(e) {
+        e.preventDefault();
+
+        const faqData = {
+            question: document.getElementById('faqQuestion').value,
+            answer: document.getElementById('faqAnswer').value
+        };
+
+        try {
+            const url = currentEditingFaq
+                ? `${API_BASE}/faq/${currentEditingFaq._id}`
+                : `${API_BASE}/faq`;
+
+            const method = currentEditingFaq ? 'PUT' : 'POST';
+
+            await makeRequest(url, {
+                method,
+                body: JSON.stringify(faqData)
+            });
+
+            showNotification(currentEditingFaq ? 'FAQ yangilandi!' : 'FAQ qo\'shildi!');
+            hideFaqModal();
+            loadFaqs();
+        } catch (error) {
+            console.error('Error saving FAQ:', error);
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    async function editFaq(faqId) {
+        try {
+            const faqs = await makeRequest(`${API_BASE}/faq`);
+            const faq = faqs.find(f => f._id === faqId);
+
+            if (faq) {
+                showFaqModal(faq);
+            }
+        } catch (error) {
+            console.error('Error loading FAQ:', error);
+            showNotification('FAQ yuklashda xatolik', 'error');
+        }
+    }
+
+    async function deleteFaq(faqId) {
+        if (!confirm('FAQ ni o\'chirishni xohlaysizmi?')) return;
+
+        try {
+            await makeRequest(`${API_BASE}/faq/${faqId}`, {
+                method: 'DELETE'
+            });
+
+            showNotification('FAQ o\'chirildi!');
+            loadFaqs();
+        } catch (error) {
+            console.error('Error deleting FAQ:', error);
+            showNotification('Xatolik: ' + error.message, 'error');
+        }
+    }
+
+    // Analytics - Uses all analytics APIs
+    async function loadAnalytics() {
+        try {
+            // Load sales analytics
+            try {
+                const salesReport = await makeRequest(`${API_BASE}/analytics/sales`);
+                if (salesReport) {
+                    document.getElementById('dailySales').textContent = `$${(salesReport.daily || 0).toFixed(2)}`;
+                    document.getElementById('weeklySales').textContent = `$${(salesReport.weekly || 0).toFixed(2)}`;
+                    document.getElementById('monthlySales').textContent = `$${(salesReport.monthly || 0).toFixed(2)}`;
+                    document.getElementById('yearlySales').textContent = `$${(salesReport.yearly || 0).toFixed(2)}`;
+                }
+            } catch (error) {
+                console.log('Sales analytics not available, calculating from orders');
+                // Fallback to calculating from orders
+                const orders = await makeRequest(`${API_BASE}/orders`);
+                if (Array.isArray(orders)) {
+                    calculateSalesAnalytics(orders);
+                }
+            }
+
+            // Load user activity analytics
+            try {
+                const userActivity = await makeRequest(`${API_BASE}/analytics/user-activity`);
+                if (userActivity) {
+                    document.getElementById('activeUsers').textContent = userActivity.activeUsers || 0;
+                    document.getElementById('newUsers').textContent = userActivity.newUsers || 0;
+                }
+            } catch (error) {
+                console.log('User activity analytics not available, calculating from users');
+                // Fallback to calculating from users
+                const users = await makeRequest(`${API_BASE}/auth/users`, { method: 'POST' });
+                if (Array.isArray(users)) {
+                    calculateUserAnalytics(users);
+                }
+            }
+
+            // Load product analytics (calculated from products)
+            const products = await makeRequest(`${API_BASE}/products`);
+            if (Array.isArray(products)) {
+                calculateProductAnalytics(products);
+            }
+
+        } catch (error) {
+            console.error('Error loading analytics:', error);
+            showNotification('Analitika ma\'lumotlarini yuklashda xatolik', 'error');
+        }
+    }
+
+    function calculateSalesAnalytics(orders) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const yearAgo = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
+
+        const dailySales = orders
+            .filter(order => order.createdAt && new Date(order.createdAt) >= today)
+            .reduce((sum, order) => sum + (order.total || 0), 0);
+
+        const weeklySales = orders
+            .filter(order => order.createdAt && new Date(order.createdAt) >= weekAgo)
+            .reduce((sum, order) => sum + (order.total || 0), 0);
+
+        const monthlySales = orders
+            .filter(order => order.createdAt && new Date(order.createdAt) >= monthAgo)
+            .reduce((sum, order) => sum + (order.total || 0), 0);
+
+        const yearlySales = orders
+            .filter(order => order.createdAt && new Date(order.createdAt) >= yearAgo)
+            .reduce((sum, order) => sum + (order.total || 0), 0);
+
+        document.getElementById('dailySales').textContent = `$${dailySales.toFixed(2)}`;
+        document.getElementById('weeklySales').textContent = `$${weeklySales.toFixed(2)}`;
+        document.getElementById('monthlySales').textContent = `$${monthlySales.toFixed(2)}`;
+        document.getElementById('yearlySales').textContent = `$${yearlySales.toFixed(2)}`;
+    }
+
+    function calculateUserAnalytics(users) {
+        const now = new Date();
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        const activeUsers = users.length;
+        const newUsers = users.filter(user => user.createdAt && new Date(user.createdAt) >= monthAgo).length;
+
+        document.getElementById('activeUsers').textContent = activeUsers;
+        document.getElementById('newUsers').textContent = newUsers;
+    }
+
+    function calculateProductAnalytics(products) {
+        const lowStockProducts = products.filter(product => (product.stock || 0) > 0 && (product.stock || 0) <= 10).length;
+        const outOfStockProducts = products.filter(product => (product.stock || 0) === 0).length;
+
+        document.getElementById('lowStockProducts').textContent = lowStockProducts;
+        document.getElementById('outOfStockProducts').textContent = outOfStockProducts;
+    }
+
+    function logout() {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        showNotification('Tizimdan muvaffaqiyatli chiqildi!');
+        setTimeout(() => {
+            window.location.href = 'products.html';
+        }, 1000);
+    }
+
+    // Global functions for onclick handlers
+    window.editProduct = editProduct;
+    window.deleteProduct = deleteProduct;
+    window.viewOrder = viewOrder;
+    window.toggleUserRole = toggleUserRole;
+    window.deleteUser = deleteUser;
+    window.editFaq = editFaq;
+    window.deleteFaq = deleteFaq;
+</script>
+</body>
+</html>

@@ -1,0 +1,1283 @@
+openapi: 3.0.0
+info:
+  title: Dern-Market API
+  version: 1.0.0
+  description: API for Dern-Market e-commerce platform
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user or admin
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  example: password123
+                role:
+                  type: string
+                  enum: [user, admin]
+                  example: user
+              required:
+                - name
+                - email
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 507f1f77bcf86cd799439011
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        example: john@example.com
+                      role:
+                        type: string
+                        example: user
+        '400':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User already exists
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/auth/login:
+    post:
+      summary: Login user or admin
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  example: password123
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 507f1f77bcf86cd799439011
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        example: john@example.com
+                      role:
+                        type: string
+                        example: user
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid credentials
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/products:
+    get:
+      summary: Get all products
+      tags:
+        - Products
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: 507f1f77bcf86cd799439011
+                    name:
+                      type: string
+                      example: Laptop
+                    description:
+                      type: string
+                      example: High-end laptop
+                    price:
+                      type: number
+                      example: 999.99
+                    stock:
+                      type: number
+                      example: 10
+                    category:
+                      type: string
+                      example: Electronics
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: 2025-08-08T12:00:00Z
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+    post:
+      summary: Create a new product (admin only)
+      tags:
+        - Products
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Laptop
+                description:
+                  type: string
+                  example: High-end laptop
+                price:
+                  type: number
+                  example: 999.99
+                stock:
+                  type: number
+                  example: 10
+                category:
+                  type: string
+                  example: Electronics
+              required:
+                - name
+                - price
+                - stock
+                - category
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  name:
+                    type: string
+                    example: Laptop
+                  description:
+                    type: string
+                    example: High-end laptop
+                  price:
+                    type: number
+                    example: 999.99
+                  stock:
+                    type: number
+                    example: 10
+                  category:
+                    type: string
+                    example: Electronics
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/products/{id}:
+    put:
+      summary: Update a product (admin only)
+      tags:
+        - Products
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          example: 507f1f77bcf86cd799439011
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Updated Laptop
+                description:
+                  type: string
+                  example: Updated high-end laptop
+                price:
+                  type: number
+                  example: 1099.99
+                stock:
+                  type: number
+                  example: 8
+                category:
+                  type: string
+                  example: Electronics
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  name:
+                    type: string
+                    example: Updated Laptop
+                  description:
+                    type: string
+                    example: Updated high-end laptop
+                  price:
+                    type: number
+                    example: 1099.99
+                  stock:
+                    type: number
+                    example: 8
+                  category:
+                    type: string
+                    example: Electronics
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product not found
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+    delete:
+      summary: Delete a product (admin only)
+      tags:
+        - Products
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          example: 507f1f77bcf86cd799439011
+      responses:
+        '200':
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product not found
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/orders:
+    get:
+      summary: Get user orders
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: 507f1f77bcf86cd799439011
+                    userId:
+                      type: string
+                      example: 507f1f77bcf86cd799439012
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          productId:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 507f1f77bcf86cd799439013
+                              name:
+                                type: string
+                                example: Laptop
+                              price:
+                                type: number
+                                example: 999.99
+                          quantity:
+                            type: number
+                            example: 2
+                    total:
+                      type: number
+                      example: 1999.98
+                    status:
+                      type: string
+                      example: pending
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+    post:
+      summary: Create a new order
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                        example: 507f1f77bcf86cd799439011
+                      quantity:
+                        type: number
+                        example: 2
+                    required:
+                      - productId
+                      - quantity
+              required:
+                - products
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  userId:
+                    type: string
+                    example: 507f1f77bcf86cd799439012
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: string
+                          example: 507f1f77bcf86cd799439013
+                        quantity:
+                          type: number
+                          example: 2
+                  total:
+                    type: number
+                    example: 1999.98
+                  status:
+                    type: string
+                    example: pending
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '400':
+          description: Invalid product or stock
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid product or insufficient stock
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/orders/{id}:
+    put:
+      summary: Update order status (admin only)
+      tags:
+        - Orders
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          example: 507f1f77bcf86cd799439011
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, processing, shipped, delivered]
+                  example: shipped
+              required:
+                - status
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  userId:
+                    type: string
+                    example: 507f1f77bcf86cd799439012
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: string
+                          example: 507f1f77bcf86cd799439013
+                        quantity:
+                          type: number
+                          example: 2
+                  total:
+                    type: number
+                    example: 1999.98
+                  status:
+                    type: string
+                    example: shipped
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Order not found
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/cart:
+    get:
+      summary: Get user cart
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Cart retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  userId:
+                    type: string
+                    example: 507f1f77bcf86cd799439012
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 507f1f77bcf86cd799439013
+                            name:
+                              type: string
+                              example: Laptop
+                            price:
+                              type: number
+                              example: 999.99
+                        quantity:
+                          type: number
+                          example: 2
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '404':
+          description: Cart not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cart not found
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+    post:
+      summary: Add item to cart
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  example: 507f1f77bcf86cd799439011
+                quantity:
+                  type: number
+                  example: 2
+              required:
+                - productId
+                - quantity
+      responses:
+        '200':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  userId:
+                    type: string
+                    example: 507f1f77bcf86cd799439012
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: string
+                          example: 507f1f77bcf86cd799439013
+                        quantity:
+                          type: number
+                          example: 2
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '400':
+          description: Invalid product or stock
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid product or insufficient stock
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+    delete:
+      summary: Remove item from cart
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  example: 507f1f77bcf86cd799439011
+              required:
+                - productId
+      responses:
+        '200':
+          description: Item removed from cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  userId:
+                    type: string
+                    example: 507f1f77bcf86cd799439012
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: string
+                          example: 507f1f77bcf86cd799439013
+                        quantity:
+                          type: number
+                          example: 2
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '404':
+          description: Cart not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cart not found
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/faq:
+    get:
+      summary: Get all FAQs
+      tags:
+        - FAQ
+      responses:
+        '200':
+          description: List of FAQs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: 507f1f77bcf86cd799439011
+                    question:
+                      type: string
+                      example: How do I track my order?
+                    answer:
+                      type: string
+                      example: Use the order tracking page with your order ID.
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: 2025-08-08T12:00:00Z
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+    post:
+      summary: Create a new FAQ (admin only)
+      tags:
+        - FAQ
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  example: What is the return policy?
+                answer:
+                  type: string
+                  example: Returns are accepted within 30 days.
+              required:
+                - question
+                - answer
+      responses:
+        '201':
+          description: FAQ created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 507f1f77bcf86cd799439011
+                  question:
+                    type: string
+                    example: What is the return policy?
+                  answer:
+                    type: string
+                    example: Returns are accepted within 30 days.
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/analytics/sales:
+    get:
+      summary: Get sales report (admin only)
+      tags:
+        - Analytics
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sales report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                    example: 5000.00
+                  count:
+                    type: number
+                    example: 50
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/analytics/top-products:
+    get:
+      summary: Get top products (admin only)
+      tags:
+        - Analytics
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Top products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: 507f1f77bcf86cd799439011
+                    totalQuantity:
+                      type: number
+                      example: 100
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+  /api/analytics/user-activity:
+    get:
+      summary: Get user activity (admin only)
+      tags:
+        - Analytics
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User activity log
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: 507f1f77bcf86cd799439011
+                    email:
+                      type: string
+                      example: john@example.com
+                    action:
+                      type: string
+                      example: login
+                    timestamp:
+                      type: string
+                      format: date-time
+                      example: 2025-08-08T12:00:00Z
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No token provided
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Admin access required
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: Authentication
+    description: Authentication endpoints
+  - name: Products
+    description: Product management endpoints
+  - name: Orders
+    description: Order management endpoints
+  - name: Cart
+    description: Shopping cart endpoints
+  - name: FAQ
+    description: FAQ management endpoints
+  - name: Analytics
+    description: Analytics and reporting endpoints
+  - name: Admin
+    description: Admin-only endpoints

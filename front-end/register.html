@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8" />
+    <title>Ro‘yxatdan o‘tish - Dern-Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/styles.css" rel="stylesheet" />
+</head>
+<body data-page="register">
+<main class="center">
+    <form class="card form" id="register-form" autocomplete="on">
+        <h1 class="title">Ro‘yxatdan o‘tish</h1>
+        <label class="label">Ism
+            <input name="name" type="text" class="input" placeholder="Ali Valiyev" required />
+        </label>
+        <label class="label">Email
+            <input name="email" type="email" class="input" placeholder="ali@example.com" required />
+        </label>
+        <label class="label">Parol
+            <input name="password" type="password" class="input" placeholder="••••••••" required />
+        </label>
+        <input type="hidden" name="role" value="user" />
+        <div class="error small" id="register-error" role="alert" aria-live="polite"></div>
+        <button class="btn primary" type="submit">Ro‘yxatdan o‘tish</button>
+        <p class="muted small mtop">Hisobingiz bormi? <a href="../front-end/login.html">Kirish</a></p>
+    </form>
+</main>
+
+<script>
+    // Inline API + Auth for this page
+    (function(){
+        const API_BASE = localStorage.getItem('DM_API_BASE') || 'http://localhost:5000'
+        const TOKEN_KEY='dm_token', USER_KEY='dm_user'
+        async function request(path,{method='GET',body,headers={}}={}) {
+            const res = await fetch(API_BASE+path,{method,headers:{'Content-Type':'application/json',...headers}, body: body?JSON.stringify(body):undefined})
+            const txt = await res.text(); let data = null; try{data = txt?JSON.parse(txt):null}catch{}
+            if(!res.ok) throw new Error(data?.message || 'HTTP '+res.status)
+            return data
+        }
+        function setAuth(token,user){ localStorage.setItem(TOKEN_KEY,token); localStorage.setItem(USER_KEY,JSON.stringify(user)) }
+
+        document.getElementById('register-form')?.addEventListener('submit', async (e)=>{
+            e.preventDefault()
+            const errEl = document.getElementById('register-error'); errEl.textContent=''
+            const fd = new FormData(e.currentTarget)
+            const name=fd.get('name'), email=fd.get('email'), password=fd.get('password')
+            try {
+                // Force role: user
+                const { token, user } = await request('/api/auth/register',{ method:'POST', body:{ name, email, password, role:'user' }})
+                setAuth(token, { id: user.id || user._id || '', name:user.name, email:user.email, role:user.role })
+                location.replace('../front-end/user-dashboard.html')
+            } catch(err){ errEl.textContent = err.message || 'Xatolik yuz berdi' }
+        })
+    })()
+</script>
+</body>
+</html>
